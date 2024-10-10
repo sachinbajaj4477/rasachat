@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://flivo.ai/wp-content/uploads/2023/03/fliveai-logo2.jpeg" type="image/x-icon">
+    <title>FlivoChats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            height: 100vh;
+        }
+        .menu {
+            width: 200px;
+            background: #FFFFFF;
+            color: black;
+            padding: 10px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .menu a {
+            color: black;
+            text-decoration: none;
+            display: block;
+            padding: 10px 5px;
+            transition: background 0.3s;
+        }
+        .menu a:hover {
+            background: #777777;
+        }
+        .menu .bottom {
+            padding: 10px 5px;
+        }
+        .menu-hidden {
+            transform: translateX(-200px); /* Move menu off-screen */
+        }
+
+        .toggle-menu {
+            position: absolute;
+            top: 10px;
+            right: -7px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: right 0.3s ease;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 40px;
+            height: auto;
+            margin-right: 10px;
+            cursor: pointer; /* Change cursor on hover */
+        }
+
+        .header h1 {
+            margin: 0; /* Remove default margin */
+        }
+
+        .login {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Push the login button to the right */
+        }
+
+        .login img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .login button {
+            background: none;
+            border: none;
+            color: #000000;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px; /* Added padding for better hit area */
+            transition: border 0.3s; /* Smooth transition for border */
+        }
+
+        /* Hover effect for the Login button */
+        .login button:hover {
+            border: 2px solid #007bff; /* Add border on hover */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        .chat-area {
+            flex: 1;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin: 5px 0;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            max-width: 70%;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: #e9ecef;
+            color: black;
+            border-radius: 5px;
+            padding: 5px 10px;
+            max-width: 70%;
+        }
+
+        .input-area {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .input-area .send-button {
+            background-color: lightgray;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-area .send-button.enabled {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .input-area .send-button img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .input-area .file-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .input-area .file-button img {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu -->
+    <div class="menu" id="menu">
+        <div>
+            <h2>Menu</h2>
+            <a href="#">Home</a>
+            <a href="#">Profile</a>
+            <a href="#">Settings</a>
+            <a href="#">Help</a>
+            <a href="#">History</a>
+        </div>
+        <div class="bottom">
+            <a href="#">Upgrade</a>
+        </div>
+
+        <button class="toggle-menu" id="toggleMenuButton">☰</button>
+    </div>
+
+    <div class="chat-container">
+        <div class="header">
+            <a href="https://flivo.ai" target="_blank"> <!-- Make logo clickable -->
+                <img src="https://flivo.ai/wp-content/uploads/2023/03/fliveai-logo2.jpeg" alt="Logo">
+            </a>
+            <h1>FlivoChats</h1> <!-- FlivoChats name is non-clickable -->
+
+            <div class="login">
+                <img src="https://cdn-icons-png.flaticon.com/256/6681/6681221.png" alt="Login Icon">
+                <button>Login</button>
+            </div>
+        </div>
+        <div class="chat-area" id="chatArea">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div class="input-area">
+            <button class="file-button">
+                <img src="https://cdn-icons-png.flaticon.com/256/724/724933.png" alt="Attach File">
+            </button>
+
+            <input type="text" id="userInput" placeholder="Type a message..." />
+
+            <button class="send-button" id="sendButton">
+                <img src="https://cdn-icons-png.flaticon.com/256/786/786205.png" alt="Send">
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const menu = document.getElementById('menu');
+        const toggleMenuButton = document.getElementById('toggleMenuButton');
+
+        toggleMenuButton.addEventListener('click', function() {
+            menu.classList.toggle('menu-hidden'); // Toggle menu visibility
+        });
+
+        const sendButton = document.getElementById('sendButton');
+        const userInput = document.getElementById('userInput');
+        const chatArea = document.getElementById('chatArea');
+
+        sendButton.disabled = true; // Initially disable send button
+
+        userInput.addEventListener('input', function() {
+            if (userInput.value.trim() !== "") {
+                sendButton.disabled = false;
+                sendButton.classList.add('enabled');
+            } else {
+                sendButton.disabled = true;
+                sendButton.classList.remove('enabled');
+            }
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const messageText = userInput.value;
+            if (messageText.trim() !== "") {
+                // Display user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.textContent = messageText;
+                chatArea.appendChild(userMessage);
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                // Fetch bot response from the Rasa API
+                const botResponse = await getBotResponse(messageText);
+
+                // Display bot message
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot';
+                botMessage.innerHTML = "<img src='https://flivo.ai/wp-content/uploads/2023/03/fliveai-logo2.jpeg' alt='Bot' style='width: 20px; height: 20px;'> " + botResponse;
+                chatArea.appendChild(botMessage);
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                userInput.value = ""; // Clear input
+                sendButton.disabled = true; // Disable send button
+                sendButton.classList.remove('enabled');
+            }
+        }
+
+        async function getBotResponse(query) {
+            try {
+                const response = await fetch("http://localhost:5005/webhooks/rest/webhook", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ sender: "user", message: query })
+                });
+
+                if (!response.ok) {
+                    console.error('API error:', response.statusText);
+                    return "Sorry, I couldn't respond. Please try again.";
+                }
+                const data = await response.json();
+                return data[0]?.text || "No response from bot."; // Handle cases with no response
+            } catch (error) {
+                console.error('Fetch error:', error);
+                return "There was an error communicating with the server.";
+            }
+        }
+
+        // Rasa Webchat Script
+        (function () {
+            let script = document.createElement("script"),
+                head = document.head || document.getElementsByTagName("head")[0];
+            script.src = "https://cdn.jsdelivr.net/npm/rasa-webchat@1.x.x/lib/index.js";
+            script.async = true;
+            script.onload = () => {
+                window.WebChat.default(
+                    {
+                        initPayload: '/greet',
+                        customData: { language: "en" }, // Add your custom data here
+                        socketUrl: "http://0.0.0.0:5005", // Replace with your Rasa server URL
+                        title: "FlivoChat",
+                        subtitle: "Chat with our bot!",
+                        params: {
+                            // Add any additional parameters here
+                        }
+                    },
+                    document.getElementById("chatArea")
+                );
+            };
+            head.appendChild(script);
+        })();
+    </script>
+</body>
+</html>
