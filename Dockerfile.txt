@@ -1,0 +1,21 @@
+# Use the official Rasa image as the base image
+FROM rasa/rasa:latest
+
+# Switch to root user to install extra packages
+USER root
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy your Rasa project files into the container
+COPY . /app
+
+# Install any additional dependencies if you have a requirements.txt
+# Uncomment the line below if needed:
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose Rasa's default port (5005)
+EXPOSE 5005
+
+# Command to run Rasa with API and CORS enabled
+CMD ["run", "--enable-api", "--cors", "*"]
